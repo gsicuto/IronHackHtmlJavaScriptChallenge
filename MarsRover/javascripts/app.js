@@ -1,25 +1,59 @@
 // Rover Object Goes Here
 // ======================
-var matrix=[
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0]
-];
 
-var rover = {direction:"N",
-posX: 5,
-posY: 5,
-travelLog: new Array()};
+
+var rover1 = {
+ name:"rover1",
+ direction:"N",
+ posX: 0,
+ posY: 0,
+ travelLog: new Array()};
+
+var rover2 ={
+ name:"rover2",
+ direction:"N",
+ posX: 0,
+ posY: 0,
+ travelLog:new Array()};
+
+ var matrix=[
+  ["","","","","","","","","",""],
+  ["","","","","","","","","",""],
+  ["","","","","","","","","",""],
+  ["","","","","","x","","","",""],
+  ["","","","",rover2,rover1,"","","",""],
+  ["","","","","","x","","","",""],
+  ["","","","","","","","","",""],
+  ["","","","","","","","","",""],
+  ["","","","","","","","","",""],
+  ["","","","","","","","","",""]
+  ];
+
+function initialize(matrix){
+  for(i=0;i < matrix.length;i++){
+    for(j=0;j < matrix[i].length;j++){
+      if(typeof(matrix[i][j])=="object"){
+        matrix[i][j].posX=j;
+        matrix[i][j].posY=i;
+        console.log(matrix[i][j]);
+      }
+    }
+  }
+}
+
+initialize(matrix);
+
+
+function detectObstacle (matrix,posX,posY){
+  //console.log (posX + ""+ posY);
+  if(matrix[posY][posX] !== ""){
+    return false
+  }
+  else return true
+}
 
 function incrementLog(rover){
-  rover.travelLog[rover.travelLog.length] = "O Rover passou por: x: "+rover.posX+" y: "+rover.posY +" direção: "+rover.direction;
+  rover.travelLog[rover.travelLog.length] = "O "+rover.name+" passou por: x: "+rover.posX+" y: "+rover.posY +" direção: "+rover.direction;
 }
 
 function turnLeft(rover){
@@ -27,26 +61,26 @@ function turnLeft(rover){
   switch (rover.direction){
     case "N":
      rover.direction = "W";
-     console.log("Rover is facing West!");
+     console.log(rover.name+" is facing West!");
      break;
 
     case "W":
      rover.direction = "S";
-     console.log("Rover is facing South!");
+     console.log(rover.name+" is facing South!");
      break;
 
     case "S":
      rover.direction = "E";
-     console.log("Rover is facing East!");
+     console.log(rover.name+" is facing East!");
      break;
 
     case "E":
      rover.direction = "N";
-     console.log("Rover is facing North!");
+     console.log(rover.name+" is facing North!");
      break;
   }
   incrementLog(rover);
-  console.log("Rover is in direction:" + rover.direction);
+  console.log(rover.name+" is in direction:" + rover.direction);
 }
 
 function turnRight(rover){
@@ -54,17 +88,17 @@ function turnRight(rover){
   switch (rover.direction){
     case "N":
      rover.direction = "E";
-     console.log("Rover is facing West!");
+     console.log(rover.name+" is facing East!");
      
      break;
     case "E":
      rover.direction = "S";
-     console.log("Rover is facing South!");
+     console.log(rover.name+" is facing South!");
      
      break;
     case "S":
      rover.direction = "W";
-     console.log("Rover is facing East!");
+     console.log("Rover is facing West!");
      
      break;
     case "W":
@@ -74,7 +108,7 @@ function turnRight(rover){
      break;
   }
   incrementLog(rover);
-  console.log("Rover is in direction:" + rover.direction);
+  console.log(rover.name+" is in direction:" + rover.direction);
 }
 
 function moveForward(rover){
@@ -82,24 +116,44 @@ function moveForward(rover){
 
   switch (rover.direction){
     case "N":
-     rover.posY = rover.posY-1;
+     if(detectObstacle(matrix,rover.posY-1,rover.posX)){
+      matrix[rover.posY][rover.posX]="";
+      matrix[rover.posY-1][rover.posX]=rover;
+      rover.posY = rover.posY-1;
+      //console.log(matrix);
+     } 
+     else console.log("Obstaculo encontrado N")
      
      break;
     case "W":
-     rover.posX = rover.posX-1;
+    if(detectObstacle(matrix,rover.posY,rover.posX-1)){
+      matrix[rover.posY][rover.posX]="";
+      matrix[rover.posY][rover.posX-1]=rover;
+      rover.posX = rover.posX-1;
+     } 
+     else console.log("Obstaculo encontrado")
      
      break;
     case "S":
+    if(detectObstacle(matrix,rover.posY+1,rover.posX)){
+     matrix[rover.posY][rover.posX]="";
+     matrix[rover.posY+1][rover.posX]=rover;
      rover.posY = rover.posY+1;
-     
-     break;
+    }
+    else console.log("Obstaculo encontrado")
+    break;
     case "E":
-      rover.posX = rover.posX +1;
-      
+    if(detectObstacle(matrix,rover.posY,rover.posX+1)){
+     matrix[rover.posY][rover.posX]="";
+     matrix[rover.posY][rover.posX+1]=rover;
+     rover.posX = rover.posX+1;
+    }
+    else console.log("Obstaculo encontrado")
       break;
   }
   incrementLog(rover);
-  console.log("A nova Posição é: x: "+rover.posX+" y: "+rover.posY);
+  console.log("A Posição do "+rover.name+" é x:" +rover.posX+" y: "+rover.posY);
+  console.log(matrix);
 }
 
 function moveBackward(rover){
@@ -107,27 +161,49 @@ function moveBackward(rover){
 
   switch (rover.direction){
     case "N":
-     rover.posY = rover.posY+1;
+     if(detectObstacle(matrix,rover.posY+1,rover.posX)){
+      matrix[rover.posY][rover.posX]="";
+      matrix[rover.posY+1][rover.posX]=rover;
+      rover.posY = rover.posY+1;
+     } 
+     else console.log("Obstaculo encontrado")
+     
      break;
-
     case "W":
-     rover.posX = rover.posX+1;
+    if(detectObstacle(matrix,rover.posY,rover.posX+1)){
+      matrix[rover.posY][rover.posX]="";
+      matrix[rover.posY][rover.posX+1]=rover;
+      rover.posX = rover.posX+1;
+     } 
+     else console.log("Obstaculo encontrado")
+     
      break;
-
     case "S":
+    if(detectObstacle(matrix,rover.posY-1,rover.posX)){
+     matrix[rover.posY][rover.posX]="";
+     matrix[rover.posY-1][rover.posX]=rover;
      rover.posY = rover.posY-1;
-     break;
-
+    }
+    else console.log("Obstaculo encontrado")
+    break;
     case "E":
-      rover.posX = rover.posX -1;
+    if(detectObstacle(matrix,rover.posY,rover.posX-1)){
+     matrix[rover.posY][rover.posX]="";
+     matrix[rover.posY][rover.posX-1]=rover;
+     rover.posX = rover.posX-1;
+    }
+    else console.log("Obstaculo encontrado")
       break;
   }
   incrementLog(rover);
-  console.log("A nova Posição é: x: "+rover.posX+" y: "+rover.posY);
+  console.log("A Posição do "+rover.name+" é x:" +rover.posX+" y: "+rover.posY);
+  console.log(matrix);
 }
 
 function moveCommand (rover, task){
+
   var x = task;
+  
   for(var i = 0; i < x.length; i++){
 
     if(x[i]!="f" && x[i]!= "l" && x[i]!="r" && x[i]!="b"){
@@ -152,7 +228,7 @@ function moveCommand (rover, task){
       break;
     } 
   }
-  for(var i = 0; i< rover.travelLog.length; i++){
+  for(var i = ""; i< rover.travelLog.length; i++){
   
     console.log(rover.travelLog[i]); 
   }
